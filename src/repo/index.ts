@@ -54,7 +54,7 @@ export class DecidrRepo {
 
       for (const file of files.filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))) {
         const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
-        const parsed = ExceptionSchema.parse(content);
+        const parsed = YAML.parse(content);
         const valid = ExceptionSchema.parse(parsed);
 
         if (new Date(valid.expires_at) > now) {
