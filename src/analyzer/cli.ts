@@ -44,7 +44,8 @@ export async function runCheck(base: string, head: string, working: boolean): Pr
           if (appealResult.classification === 'allow') {
             console.log(`   ✅ [AI ALLOWED] Reasoning: ${appealResult.reasoning}`);
             if (appealResult.proposed_exception) {
-              console.log(`   Staged proposed exception: ${appealResult.proposed_exception.allowed_usage} in ${appealResult.proposed_exception.scope_paths.join(', ')}`);
+              const pe = appealResult.proposed_exception as any;
+              console.log(`   Staged proposed exception: ${pe.id || 'Pending'} (${pe.allowed_usage}) in ${pe.scope_paths.join(', ')}`);
             }
             exempted++;
           } else {

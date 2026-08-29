@@ -4,20 +4,35 @@ import { DecidrRepo } from '../repo/index.js';
 import { Exception } from '../repo/schemas.js';
 
 // TODO: replace with real loader once Person 3's staging format is confirmed
-async function loadProposedException(excId: string): Promise<Exception> {
-  return {
-    id: excId,
-    decision_id: 'ADR-004',
-    scope: { paths: ['src/queue/*'] },
-    reason: 'Temporary caching workaround, tracked for removal.',
-    approved_by: '',
-    created_at: new Date().toISOString(),
-    expires_at: '2026-12-01',
-  };
+async function loadProposedException(excId: string, repo: DecidrRepo): Promise<Exception | null> {
+  const history = await repo.getHistory();
+  for (const event of history) {
+    if (event.event_type === 'APPEAL_SUBMITTED') {
+      const pe = event.details?.proposed_exception;
+      if (pe && pe.id === excId) {
+        const expiresAt = pe.expires || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        return {
+          id: excId,
+          decision_id: pe.decision_id,
+          scope: { paths: pe.scope_paths || ['src/**'] },
+          reason: pe.reason || pe.allowed_usage || 'AI proposed exception',
+          approved_by: '',
+          created_at: new Date().toISOString(),
+          expires_at: expiresAt
+        };
+      }
+    }
+  }
+  return null;
 }
 
 export async function approveCommand(excId: string, repo: DecidrRepo) {
-  const proposal = await loadProposedException(excId);
+  const proposal = await loadProposedException(excId, repo);
+
+  if (!proposal) {
+    console.log(chalk.red(`✖ Proposed exception ${excId} not found in staged history.`));
+    return;
+  }
 
   console.log(chalk.bold('\nProposed exception:'));
   console.log(`  ID:       ${proposal.id}`);
@@ -42,8 +57,8 @@ export async function approveCommand(excId: string, repo: DecidrRepo) {
     created_at: new Date().toISOString(),
   };
 
-  // TODO: swap for repo.saveException(finalException) once Person 1 adds it
-  console.log(chalk.dim('(would write EXC yaml here — waiting on repo.saveException)'));
+  // Write exception YAML
+  await repo.saveException(finalException);
 
   await repo.logEvent({
     event_type: 'EXCEPTION_APPROVED',

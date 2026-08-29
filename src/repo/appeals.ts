@@ -264,15 +264,23 @@ export async function appeal(
   }
 
   // Programmatic recovery fallback for allowed classification with missing proposed_exception
-  if (result.classification === 'allow' && !result.proposed_exception) {
-    console.warn(`[Ambiguity Court] Warning: AI returned 'allow' but proposed_exception was empty. Synthesizing exception...`);
-    result.proposed_exception = {
-      decision_id: ruleId,
-      scope_paths: ["src/**"],
-      allowed_usage: "ai_allowed_fallback",
-      reason: result.reasoning || "AI approved this usage as distinct/legitimate",
-      expires: null
-    };
+  if (result.classification === 'allow') {
+    if (!result.proposed_exception) {
+      console.warn(`[Ambiguity Court] Warning: AI returned 'allow' but proposed_exception was empty. Synthesizing exception...`);
+      result.proposed_exception = {
+        decision_id: ruleId,
+        scope_paths: ["src/**"],
+        allowed_usage: "ai_allowed_fallback",
+        reason: result.reasoning || "AI approved this usage as distinct/legitimate",
+        expires: null
+      } as any;
+    }
+
+    const peObj = result.proposed_exception as any;
+    if (!peObj.id) {
+      const shortId = crypto.createHash('md5').update(codeSnippet + ruleId + new Date().toISOString()).digest('hex').slice(0, 6).toUpperCase();
+      peObj.id = `EXC-${shortId}`;
+    }
   }
 
   // Log the event using the repo SDK so it is staged for human review (Person 4's flow)
