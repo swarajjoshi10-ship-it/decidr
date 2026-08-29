@@ -1,30 +1,16 @@
-# 📐 Truthmark (Decidr)
+# 📐 Decidr
 
 > **Executable Architectural Memory & AI Governance Shield for Software Teams.**
 
-Truthmark (CLI name: `decidr`) ensures that your team's architectural decisions become living, executable rules. It validates code compliance locally in milliseconds, escalates ambiguous cases to a Groq-powered AI Appeals Court, and puts control back in the hands of human architects through a source-controlled approval loop.
-
-![Truthmark Architecture](assets/architecture.png)
+Decidr ensures that your team's architectural decisions become living, executable rules. It validates code compliance locally in milliseconds, escalates ambiguous cases to a Groq-powered AI Appeals Court, and puts control back in the hands of human architects through a source-controlled approval loop.
 
 ---
 
 ## 🚀 The Architecture
 
-Truthmark uses a **hybrid, deterministic-first governance loop** designed for speed and cost efficiency:
+Decidr uses a **hybrid, deterministic-first governance loop** designed for speed and cost efficiency:
 
-```mermaid
-graph TD
-    A[Git Diff / Working Changes] --> B[Deterministic AST Engine]
-    B -->|Strict Violation| C[❌ Block Build Instantly]
-    B -->|Strict Pass| D[🟢 Pass Build Silently]
-    B -->|Ambiguous Match| E[⚖️ AI Appeals Court Groq]
-    E -->|AI Blocked| C
-    E -->|AI Allowed| F[Staged Exception Proposal]
-    F --> G[decidr approve]
-    G --> H[YAML Exception Saved]
-    H -->|Next Scan| B
-```
-<.
+![Decidr Architecture](assets/architecture.png)
 
 ---
 
