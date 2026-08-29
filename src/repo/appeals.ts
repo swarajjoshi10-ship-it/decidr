@@ -37,6 +37,7 @@ Respond with ONLY valid JSON, no markdown fences, no extra text, matching exactl
   }
 }
 
+If classification is "allow", proposed_exception must NOT be null. It must contain a valid exception object detailing what specific usage is being allowed and on what file/directory scope, so that a human can approve it and save it to the exception list to prevent future AI roundtrips.
 If classification is "block", proposed_exception must be null.
 Do not include any text outside the JSON object.`;
 
@@ -171,6 +172,38 @@ export interface AppealResult {
   };
 }
 
+async function loadADRHistory(ruleId: string): Promise<string[]> {
+  const logPath = path.join(process.cwd(), '.decidr', 'history', 'events.jsonl');
+  try {
+    const content = await fs.readFile(logPath, 'utf-8');
+    const lines = content.trim().split('\n');
+    const history: string[] = [];
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const event = JSON.parse(line);
+        if (event.entity_id === ruleId && event.event_type === 'APPEAL_SUBMITTED') {
+          const details = event.details || {};
+          const classification = details.classification || 'unknown';
+          const reason = details.reasoning || '';
+          const snippet = details.codeSnippet ? details.codeSnippet.replace(/\r?\n/g, ' ') : '';
+          const snippetTruncated = snippet.length > 50 ? snippet.slice(0, 47) + '...' : snippet;
+          
+          history.push(
+            `[${event.timestamp || 'Prior'}] AI Court resolved ${classification} on "${snippetTruncated}" because: ${reason}`
+          );
+        }
+      } catch {
+        // Skip malformed JSON lines
+      }
+    }
+    return history.slice(-5);
+  } catch {
+    return [];
+  }
+}
+
 export async function appeal(
   codeSnippet: string,
   matchedRule: any,
@@ -187,39 +220,59 @@ export async function appeal(
   if (cache[key]) {
     console.log(`[Cache Hit] Returning cached appeal response for ${ruleId}`);
     result = cache[key];
-  } else if (process.env.DECIDR_OFFLINE === 'true') {
-    console.log(`[Offline Mode] Active. Cache miss for ${ruleId}. Returning simulated safe fallback.`);
-    const isMockBlock = codeSnippet.toLowerCase().includes('violation') || codeSnippet.toLowerCase().includes('forbidden');
-    result = {
-      classification: isMockBlock ? 'block' : 'allow',
-      confidence: 0.99,
-      reasoning: `Offline simulation mode active. Snippet keywords directed fallback to ${isMockBlock ? 'block' : 'allow'}.`,
-      proposed_exception: isMockBlock ? null : {
-        decision_id: ruleId,
-        scope_paths: ["src/**"],
-        allowed_usage: "offline_mock_exception",
-        reason: "Offline demonstration fallback",
-        expires: null
-      }
-    };
-    cache[key] = result;
-    writeCache(cache);
   } else {
-    const userPrompt = buildUserPrompt(codeSnippet, adaptedRule, existingExceptions, history);
-    try {
-      result = await getValidAppeal(userPrompt);
+    // Dynamic history loading if empty
+    let finalHistory = history;
+    if (!finalHistory || finalHistory.length === 0) {
+      finalHistory = await loadADRHistory(ruleId);
+    }
+
+    if (process.env.DECIDR_OFFLINE === 'true') {
+      console.log(`[Offline Mode] Active. Cache miss for ${ruleId}. Returning simulated safe fallback.`);
+      const isMockBlock = codeSnippet.toLowerCase().includes('violation') || codeSnippet.toLowerCase().includes('forbidden');
+      result = {
+        classification: isMockBlock ? 'block' : 'allow',
+        confidence: 0.99,
+        reasoning: `Offline simulation mode active. Snippet keywords directed fallback to ${isMockBlock ? 'block' : 'allow'}.`,
+        proposed_exception: isMockBlock ? null : {
+          decision_id: ruleId,
+          scope_paths: ["src/**"],
+          allowed_usage: "offline_mock_exception",
+          reason: "Offline demonstration fallback",
+          expires: null
+        }
+      };
       cache[key] = result;
       writeCache(cache);
-    } catch (err: any) {
-      console.error(`[Ambiguity Court] Groq API call failed: ${err.message}`);
-      console.log(`[Ambiguity Court] Attempting grace fallback for ${ruleId}`);
-      result = {
-        classification: 'block',
-        confidence: 0.5,
-        reasoning: `Failed to contact AI Appeals Court: ${err.message}. Blocked by default for safety.`,
-        proposed_exception: null
-      };
+    } else {
+      const userPrompt = buildUserPrompt(codeSnippet, adaptedRule, existingExceptions, finalHistory);
+      try {
+        result = await getValidAppeal(userPrompt);
+        cache[key] = result;
+        writeCache(cache);
+      } catch (err: any) {
+        console.error(`[Ambiguity Court] Groq API call failed: ${err.message}`);
+        console.log(`[Ambiguity Court] Attempting grace fallback for ${ruleId}`);
+        result = {
+          classification: 'block',
+          confidence: 0.5,
+          reasoning: `Failed to contact AI Appeals Court: ${err.message}. Blocked by default for safety.`,
+          proposed_exception: null
+        };
+      }
     }
+  }
+
+  // Programmatic recovery fallback for allowed classification with missing proposed_exception
+  if (result.classification === 'allow' && !result.proposed_exception) {
+    console.warn(`[Ambiguity Court] Warning: AI returned 'allow' but proposed_exception was empty. Synthesizing exception...`);
+    result.proposed_exception = {
+      decision_id: ruleId,
+      scope_paths: ["src/**"],
+      allowed_usage: "ai_allowed_fallback",
+      reason: result.reasoning || "AI approved this usage as distinct/legitimate",
+      expires: null
+    };
   }
 
   // Log the event using the repo SDK so it is staged for human review (Person 4's flow)
