@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { DecidrRepo } from '../repo/index';
-import { Exception } from '../repo/schemas';
+import { DecidrRepo } from '../repo/index.js';
+import { Exception } from '../repo/schemas.js';
 
 // TODO: replace with real loader once Person 3's staging format is confirmed
 async function loadProposedException(excId: string): Promise<Exception> {

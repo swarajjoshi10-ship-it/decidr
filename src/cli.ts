@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { DecidrRepo } from './repo/index';
+import { DecidrRepo } from './repo/index.js';
 import * as process from 'process';
-import { historyCommand } from './commands/history';
-import { approveCommand } from './commands/approve';
+import { historyCommand } from './commands/history.js';
+import { approveCommand } from './commands/approve.js';
 import { runCheck } from './analyzer/cli.js';
 import { explainFile } from './analyzer/explain.js';
 

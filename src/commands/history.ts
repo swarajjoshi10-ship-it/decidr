@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { DecidrRepo } from '../repo/index';
+import { DecidrRepo } from '../repo/index.js';
 
 export async function historyCommand(adrId: string, repo: DecidrRepo): Promise<void> {
   try {
