@@ -1,0 +1,36 @@
+name: Decidr Architecture Governance
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  decidr-check:
+    name: Run Architectural Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for diff checks
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-cache: 'npm'
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build CLI
+        run: npm run build
+
+      - name: Run Policy Scan
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          # Fetch the target base branch to ensure it is available for diffing
+          git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+          node dist/cli.js check --base ${{ github.base_ref }} --head HEAD
