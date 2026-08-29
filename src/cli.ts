@@ -5,6 +5,8 @@ import { DecidrRepo } from './repo/index';
 import * as process from 'process';
 import { historyCommand } from './commands/history';
 import { approveCommand } from './commands/approve';
+import { runCheck } from './analyzer/cli.js';
+import { explainFile } from './analyzer/explain.js';
 
 const program = new Command();
 const repo = new DecidrRepo();

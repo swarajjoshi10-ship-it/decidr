@@ -1,6 +1,7 @@
 {
   "name": "decidr",
   "version": "1.0.0",
+  "type": "module",
   "license": "ISC",
   "dependencies": {
     "@octokit/rest": "^22.0.1",
