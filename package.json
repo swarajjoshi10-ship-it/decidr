@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "type": "module",
   "license": "ISC",
+  "bin": {
+    "decidr": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "prepare": "npm run build"
+  },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "boxen": "^8.0.1",
