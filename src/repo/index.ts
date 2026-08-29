@@ -129,6 +129,12 @@ export class DecidrRepo {
     
     await fs.appendFile(logPath, JSON.stringify(fullEvent) + '\n', 'utf-8');
   }
+
+  async saveException(exception: Exception): Promise<void> {
+    ExceptionSchema.parse(exception);
+    const filePath = path.join(this.baseDir, 'exceptions', `${exception.id}.yaml`);
+    await fs.writeFile(filePath, YAML.stringify(exception), 'utf-8');
+  }
 }
 
 export { appeal, AppealResult } from './appeals.js';

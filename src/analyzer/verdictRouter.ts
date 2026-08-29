@@ -1,14 +1,3 @@
-/**
- * Verdict Logic Router
- * ---------------------
- * Matches extracted code patterns against each ADR's constraints.
- *
- *   PASS       -> signal matches must_use or an allowed_for pattern
- *   VIOLATION  -> signal matches a prohibited_for or pattern constraint, no exception covers it
- *   EXEMPTED   -> signal matches a prohibited pattern, but an active exception covers this path
- *   AMBIGUOUS  -> signal touches the constraint's subject but isn't explicitly allowed/prohibited
- */
-
 import type { ADR, Exception } from '../repo/schemas.js';
 import type { ExtractedPatterns } from './patternExtractor.js';
 import { allMatches } from './patternExtractor.js';
@@ -33,31 +22,63 @@ export interface RoutedResult {
   exception?: Exception;
 }
 
-function matchesAny(signal: string, patterns: string[]): boolean {
-  const s = signal.toLowerCase();
-  return patterns.some((p) => !!p && s.includes(p.toLowerCase()));
-}
-
-/**
- * Whole-keyword match: checks if constraint subject covers the given signal.
- * Supports '*' as a universal wildcard.
- */
-function matchesSubject(subject: string, signal: string): boolean {
-  if (!subject) return false;
-  if (subject === '*') return true;
-  const subjectKeywords = new Set(subject.toLowerCase().split(/[-_\s]+/));
-  const signalParts = signal.split(/(?=[A-Z])|[.\s_-]+/).map((part) => part.toLowerCase());
-  return signalParts.some((part) => subjectKeywords.has(part));
-}
-
 /** Minimal glob support: '**' -> any path depth, '*' -> any single segment. */
 function globMatch(pattern: string, filePath: string): boolean {
-  const escaped = pattern
+  const normPath = filePath.replace(/\\/g, '/').replace(/^\.\//, '');
+  const normPattern = pattern.replace(/\\/g, '/').replace(/^\.\//, '');
+
+  const escaped = normPattern
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
     .replace(/\*\*/g, '§DOUBLESTAR§')
     .replace(/\*/g, '[^/]*')
     .replace(/§DOUBLESTAR§/g, '.*');
-  return new RegExp(`^${escaped}$`).test(filePath);
+    
+  return new RegExp(`^${escaped}$`).test(normPath);
+}
+
+/** Checks if an ADR's scope applies to the current file path */
+function isPathInScope(filePath: string, adr: ADR): boolean {
+  const scopePaths = (adr as any).scope?.paths ?? (adr as any).paths;
+  if (!scopePaths || scopePaths.length === 0) return true;
+  return scopePaths.some((p: string) => globMatch(p, filePath));
+}
+
+/** Word-boundary aware pattern matching to avoid false substring hits */
+function matchesPattern(signal: string, pattern: string): boolean {
+  if (!pattern) return false;
+  if (pattern === '*') return true;
+  
+  const cleanSignal = signal.toLowerCase();
+  const cleanPattern = pattern.toLowerCase();
+
+  // Direct substring match for dot-notated method calls (e.g., "console.log")
+  if (cleanPattern.includes('.') && cleanSignal.includes(cleanPattern)) {
+    return true;
+  }
+
+  // Exact token/word-boundary check for raw identifiers (e.g., "var", "eval")
+  const regex = new RegExp(`\\b${cleanPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+  return regex.test(signal);
+}
+
+function matchesAny(signal: string, patterns: string[]): boolean {
+  return patterns.some((p) => matchesPattern(signal, p));
+}
+
+/** Flexibly matches signal tokens against ADR subjects (e.g., "console" -> "logging") */
+function matchesSubject(subject: string, signal: string): boolean {
+  if (!subject) return false;
+  if (subject === '*') return true;
+  
+  const sub = subject.toLowerCase();
+  const sig = signal.toLowerCase();
+
+  const subjectKeywords = sub.split(/[-_\s]+/);
+  const signalParts = sig.split(/(?=[A-Z])|[.\s_-]+/).filter(Boolean);
+
+  return signalParts.some((part) => 
+    subjectKeywords.some((kw) => kw.includes(part) || part.includes(kw))
+  );
 }
 
 function findException(filePath: string, decisionId: string, exceptions: Exception[]): Exception | undefined {
@@ -76,7 +97,10 @@ export function route(
 
   for (const match of allMatches(patterns)) {
     const { signal } = match;
+
     for (const adr of adrs) {
+      if (!isPathInScope(filePath, adr)) continue;
+
       for (const constraint of adr.constraints) {
         const constraintAny = constraint as any;
         const prohibited = [
@@ -99,7 +123,7 @@ export function route(
               lineNumber: match.lineNumber,
               lineText: match.lineText,
               exception,
-              reason: `'${signal}' would violate ${adr.id}, but is covered by approved exception ${exception.id}: ${exception.reason}`,
+              reason: `'${signal}' matches prohibited rule in ${adr.id}, but is covered by exception ${exception.id}: ${exception.reason}`,
             });
           } else {
             results.push({
