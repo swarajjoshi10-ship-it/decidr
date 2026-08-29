@@ -16,6 +16,13 @@ export const ADRSchema = z.object({
   approved_by: z.string(),
 });
 
+export const AgentPolicySchema = z.object({
+  agent_id: z.string(), // e.g., "claude-3.5-sonnet"
+  allowed_paths: z.array(z.string()),
+  prohibited_actions: z.array(z.string()), // e.g., ["db_write", "schema_edit"]
+  requires_human_approval: z.boolean().default(true),
+});
+
 export const ExceptionSchema = z.object({
   id: z.string(), // e.g., "EXC-001"
   decision_id: z.string(),
@@ -35,6 +42,8 @@ export const HistoryEventSchema = z.object({
   actor: z.string(),  
   details: z.record(z.string(), z.any()),
 });
+
+
 
 export type ADR = z.infer<typeof ADRSchema>;
 export type Exception = z.infer<typeof ExceptionSchema>;
