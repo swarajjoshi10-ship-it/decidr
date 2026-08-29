@@ -79,3 +79,5 @@ export class DecidrRepo {
     await fs.appendFile(logPath, JSON.stringify(fullEvent) + '\n', 'utf-8');
   }
 }
+
+export { appeal, AppealResult } from './appeals.js';

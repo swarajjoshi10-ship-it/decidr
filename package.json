@@ -22,12 +22,15 @@
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
     "gradient-string": "^3.0.0",
+    "groq-sdk": "^1.6.0",
     "treeify": "^1.1.0",
     "yaml": "^2.9.0",
     "zod": "^4.5.2"
   },
   "devDependencies": {
     "@types/gradient-string": "^1.1.6",
-    "@types/treeify": "^1.0.3"
+    "@types/node": "^26.4.0",
+    "@types/treeify": "^1.0.3",
+    "typescript": "^7.0.2"
   }
 }
