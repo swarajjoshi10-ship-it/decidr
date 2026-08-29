@@ -35,6 +35,16 @@ graph TD
 
 ---
 
+## ⚙️ Core Design Principles
+
+*   **Hybrid Deterministic & AI Architecture**: Avoids blindly sending entire codebases to expensive LLMs. Instead, it uses fast, deterministic pattern matching first, escalating to an AI Appeals Court only when rules are ambiguous.
+*   **Git Internals Integration**: Interacts directly with Git's diffing engine (`git diff` and working trees) to parse code changes on-the-fly before they reach a shared repository.
+*   **Enterprise Governance Engine**: Mimics enterprise-grade governance platforms (like SonarQube, Snyk, or ESLint custom rules) by binding Architectural Decision Records (ADRs) and exception waivers directly to source code.
+*   **CI/CD Pipeline Readiness**: Implements standard POSIX exit codes (0 for pass, 1 for violations), enabling it to run as a blocking pre-commit hook or a GitHub Actions pull request gate.
+*   **Modular Multi-Layer System Design**: The codebase follows clean architecture principles, separating storage schemas (`repo`), AST/diff extraction (`diffReader`/`patternExtractor`), routing engines (`verdictRouter`), and LLM API integrations (`appeal`).
+
+---
+
 ## 🛠️ Getting Started
 
 ### 1. Installation
