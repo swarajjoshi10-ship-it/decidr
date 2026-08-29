@@ -4,6 +4,8 @@
 
 Truthmark (CLI name: `decidr`) ensures that your team's architectural decisions become living, executable rules. It validates code compliance locally in milliseconds, escalates ambiguous cases to a Groq-powered AI Appeals Court, and puts control back in the hands of human architects through a source-controlled approval loop.
 
+![Truthmark Architecture](assets/architecture.png)
+
 ---
 
 ## 🚀 The Architecture
