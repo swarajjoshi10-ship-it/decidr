@@ -147,15 +147,29 @@ export function route(
             reason: `'${signal}' complies with ${adr.id} ('${constraint.subject}').`,
           });
         } else if (match.kind === 'call' && matchesSubject(constraint.subject, signal)) {
-          results.push({
-            verdict: Verdict.AMBIGUOUS,
-            adr,
-            constraint,
-            matchedSignal: signal,
-            lineNumber: match.lineNumber,
-            lineText: match.lineText,
-            reason: `'${signal}' relates to '${constraint.subject}' under ${adr.id} but isn't explicitly allowed or prohibited.`,
-          });
+          const exception = findException(filePath, adr.id, exceptions);
+          if (exception) {
+            results.push({
+              verdict: Verdict.EXEMPTED,
+              adr,
+              constraint,
+              matchedSignal: signal,
+              lineNumber: match.lineNumber,
+              lineText: match.lineText,
+              exception,
+              reason: `'${signal}' relates to '${constraint.subject}' under ${adr.id}, but is covered by approved exception ${exception.id}: ${exception.reason}`,
+            });
+          } else {
+            results.push({
+              verdict: Verdict.AMBIGUOUS,
+              adr,
+              constraint,
+              matchedSignal: signal,
+              lineNumber: match.lineNumber,
+              lineText: match.lineText,
+              reason: `'${signal}' relates to '${constraint.subject}' under ${adr.id} but isn't explicitly allowed or prohibited.`,
+            });
+          }
         }
       }
     }
