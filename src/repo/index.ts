@@ -30,7 +30,7 @@ export class DecidrRepo {
       // 2. Read individual event files if present
       const files = await fs.readdir(historyDir);
       for (const file of files) {
-        if ((file.endsWith('.yaml') || file.endsWith('.yml')) && file !== 'events.jsonl') {
+        if ((file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json')) && file !== 'events.jsonl') {
           const content = await fs.readFile(path.join(historyDir, file), 'utf-8');
           events.push(YAML.parse(content));
         }
@@ -62,14 +62,29 @@ export class DecidrRepo {
       const files = await fs.readdir(dirPath);
       const decisions: ADR[] = [];
 
-      for (const file of files.filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))) {
-        const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
-        const parsed = YAML.parse(content);
-        const valid = ADRSchema.parse(parsed);
-        if (valid.status === 'active') decisions.push(valid);
+      // Support .json alongside .yaml and .yml
+      const adrFiles = files.filter(f => 
+        f.endsWith('.yaml') || f.endsWith('.yml') || f.endsWith('.json')
+      );
+
+      for (const file of adrFiles) {
+        try {
+          const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
+          const parsed = YAML.parse(content);
+          const valid = ADRSchema.parse(parsed);
+
+          // Allow both 'accepted' and 'active' status values
+          const status = String(valid.status).toLowerCase();
+          if (status === 'active' || status === 'accepted') {
+            decisions.push(valid);
+          }
+        } catch (fileErr) {
+          console.error(`\n✖ ADR Validation Error in file [${file}]:`, fileErr);
+        }
       }
       return decisions;
-    } catch {
+    } catch (err) {
+      console.error('✖ Failed to read decisions directory:', err);
       return [];
     }
   }
@@ -81,17 +96,25 @@ export class DecidrRepo {
       const exceptions: Exception[] = [];
       const now = new Date();
 
-      for (const file of files.filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))) {
-        const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
-        const parsed = YAML.parse(content);
-        const valid = ExceptionSchema.parse(parsed);
+      const exceptionFiles = files.filter(f => 
+        f.endsWith('.yaml') || f.endsWith('.yml') || f.endsWith('.json')
+      );
 
-        if (new Date(valid.expires_at) > now) {
-          exceptions.push(valid);
+      for (const file of exceptionFiles) {
+        try {
+          const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
+          const parsed = YAML.parse(content);
+          const valid = ExceptionSchema.parse(parsed);
+
+          if (new Date(valid.expires_at) > now) {
+            exceptions.push(valid);
+          }
+        } catch (fileErr) {
+          console.error(`\n✖ Exception Validation Error in file [${file}]:`, fileErr);
         }
       }
       return exceptions;
-    } catch {
+    } catch (err) {
       return [];
     }
   }
