@@ -10,6 +10,37 @@ export class DecidrRepo {
     this.baseDir = path.join(rootDir, '.decidr');
   }
 
+  async getHistory(): Promise<HistoryEvent[]> {
+    const historyDir = path.join(this.baseDir, 'history');
+    const logPath = path.join(historyDir, 'events.jsonl');
+    const events: HistoryEvent[] = [];
+
+    try {
+      // 1. Read event stream from events.jsonl
+      try {
+        const content = await fs.readFile(logPath, 'utf-8');
+        const lines = content.trim().split('\n').filter(Boolean);
+        for (const line of lines) {
+          events.push(JSON.parse(line));
+        }
+      } catch {
+        // Log file may not exist yet on initial run
+      }
+
+      // 2. Read individual event files if present
+      const files = await fs.readdir(historyDir);
+      for (const file of files) {
+        if ((file.endsWith('.yaml') || file.endsWith('.yml')) && file !== 'events.jsonl') {
+          const content = await fs.readFile(path.join(historyDir, file), 'utf-8');
+          events.push(YAML.parse(content));
+        }
+      }
+
+      return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    } catch (err) {
+      return events;
+    }
+  }
 
   async init(): Promise<void> {
     const dirs = ['decisions', 'exceptions', 'history'];
@@ -24,7 +55,6 @@ export class DecidrRepo {
       'utf-8'
     );
   }
-
 
   async getActiveDecisions(): Promise<ADR[]> {
     const dirPath = path.join(this.baseDir, 'decisions');
@@ -44,7 +74,6 @@ export class DecidrRepo {
     }
   }
 
-
   async getActiveExceptions(): Promise<Exception[]> {
     const dirPath = path.join(this.baseDir, 'exceptions');
     try {
@@ -54,7 +83,7 @@ export class DecidrRepo {
 
       for (const file of files.filter(f => f.endsWith('.yaml') || f.endsWith('.yml'))) {
         const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
-        const parsed = ExceptionSchema.parse(content);
+        const parsed = YAML.parse(content);
         const valid = ExceptionSchema.parse(parsed);
 
         if (new Date(valid.expires_at) > now) {
@@ -67,7 +96,6 @@ export class DecidrRepo {
     }
   }
 
-  
   async logEvent(event: Omit<HistoryEvent, 'timestamp'>): Promise<void> {
     const logPath = path.join(this.baseDir, 'history', 'events.jsonl');
     const fullEvent: HistoryEvent = {
