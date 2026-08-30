@@ -48,7 +48,14 @@ export class DecidrRepo {
       await fs.mkdir(path.join(this.baseDir, dir), { recursive: true });
     }
 
-    const defaultConfig = { version: '1.0', engine: 'hybrid' };
+    const defaultConfig = {
+      version: '1.0',
+      engine: 'hybrid',
+      auth: {
+        admin: 'admin',
+        dev: 'dev'
+      }
+    };
     await fs.writeFile(
       path.join(this.baseDir, 'config.yaml'),
       YAML.stringify(defaultConfig),

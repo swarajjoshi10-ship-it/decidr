@@ -242,28 +242,34 @@ function closeLoginModal(event) {
   }
 }
 
-function handleLoginSubmit(event) {
+async function handleLoginSubmit(event) {
   event.preventDefault();
   const role = document.getElementById('login-role').value;
   const username = document.getElementById('login-username').value.trim();
-  const pass = document.getElementById('login-password').value;
+  const password = document.getElementById('login-password').value;
 
-  // Simple hardcoded checks: 'admin' for Admin, 'dev' for Employee
-  if (role === 'admin' && pass !== 'admin') {
-    alert('Invalid password for Admin Role! (Use password: admin)');
-    return;
-  }
-  if (role === 'employee' && pass !== 'dev') {
-    alert('Invalid password for Employee Role! (Use password: dev)');
-    return;
-  }
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, username, password })
+    });
 
-  // Save session details
-  localStorage.setItem('role', role);
-  localStorage.setItem('adminName', username);
-  
-  updateUIForRole(role, username);
-  hideLoginModal();
+    const data = await res.json();
+    if (!res.ok) {
+      alert(`Authentication failed: ${data.error || 'Invalid credentials'}`);
+      return;
+    }
+
+    // Save session details
+    localStorage.setItem('role', role);
+    localStorage.setItem('adminName', username);
+    
+    updateUIForRole(role, username);
+    hideLoginModal();
+  } catch (err) {
+    alert(`Connection error: ${err.message}`);
+  }
 }
 
 // Bootstrapping

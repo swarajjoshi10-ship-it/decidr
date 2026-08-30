@@ -11,7 +11,33 @@ const repo = new DecidrRepo();
 app.use(express.json());
 app.use(express.static(path.join(process.cwd(), 'public')));
 
-// 1. Get Active Decisions
+// 1. Authenticate Role & Credentials
+app.post('/api/auth', async (req, res) => {
+  const { role, username, password } = req.body;
+  try {
+    const YAML = await import('yaml');
+    const configPath = path.join(process.cwd(), '.decidr', 'config.yaml');
+    const configContent = await fs.readFile(configPath, 'utf-8');
+    const config = YAML.parse(configContent);
+
+    const authConfig = config.auth || { admin: 'admin', dev: 'dev' };
+
+    if (role === 'admin') {
+      if (password === String(authConfig.admin)) {
+        return res.json({ success: true });
+      }
+    } else if (role === 'employee') {
+      if (password === String(authConfig.dev)) {
+        return res.json({ success: true });
+      }
+    }
+    res.status(401).json({ error: 'Invalid password' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Get Active Decisions
 app.get('/api/decisions', async (req, res) => {
   try {
     const decisions = await repo.getActiveDecisions();
