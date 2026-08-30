@@ -177,7 +177,49 @@ function animateValue(id, start, end, duration) {
   }, 16);
 }
 
+// Admin Login / Logout Modal Controllers
+function showLoginModal() {
+  const btn = document.getElementById('admin-login-btn');
+  // If already logged in, click acts as a logout
+  if (localStorage.getItem('adminName')) {
+    localStorage.removeItem('adminName');
+    document.getElementById('mascot-name').innerText = 'Cô Dấu';
+    btn.innerText = 'Admin Login';
+    return;
+  }
+  document.getElementById('login-modal').classList.add('active');
+}
+
+function hideLoginModal() {
+  document.getElementById('login-modal').classList.remove('active');
+  document.getElementById('login-username').value = '';
+}
+
+function closeLoginModal(event) {
+  if (event.target === document.getElementById('login-modal')) {
+    hideLoginModal();
+  }
+}
+
+function handleLoginSubmit(event) {
+  event.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  if (username) {
+    localStorage.setItem('adminName', username);
+    document.getElementById('mascot-name').innerText = username;
+    document.getElementById('admin-login-btn').innerText = `Logout (${username})`;
+    hideLoginModal();
+  }
+}
+
 // Bootstrapping
 window.addEventListener('DOMContentLoaded', () => {
   loadDashboardData();
+  
+  // Restore login session state
+  const savedAdmin = localStorage.getItem('adminName');
+  if (savedAdmin) {
+    document.getElementById('mascot-name').innerText = savedAdmin;
+    document.getElementById('admin-login-btn').innerText = `Logout (${savedAdmin})`;
+  }
 });

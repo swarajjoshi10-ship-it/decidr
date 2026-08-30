@@ -34,9 +34,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 9, 8, 0.9);
+  background: rgba(10, 9, 8, 0.95);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1.5px solid rgba(203, 166, 115, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .header-container {
@@ -584,4 +585,118 @@ footer {
   .footer-right {
     gap: 2rem;
   }
+}
+
+/* Admin Authorization Modal & Login Triggers */
+.auth-container {
+  display: flex;
+  align-items: center;
+}
+
+.btn-login-trigger {
+  background: transparent;
+  color: var(--accent-gold);
+  border: 1px solid rgba(203, 166, 115, 0.35);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-login-trigger:hover {
+  background: rgba(203, 166, 115, 0.08);
+  border-color: var(--accent-gold);
+  color: white;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  display: none; /* Controlled dynamically by JavaScript */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 400px;
+  padding: 2.2rem 2rem;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-content h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  margin-bottom: 0.5rem;
+}
+
+.modal-content p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.form-actions-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  padding: 0.6rem 1.4rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-main);
+}
+
+.btn-submit {
+  background: var(--accent-gold);
+  color: #12100e;
+  border: none;
+  padding: 0.6rem 1.6rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: #d8b887;
+  transform: translateY(-1px);
 }
