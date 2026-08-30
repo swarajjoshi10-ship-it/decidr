@@ -2,7 +2,7 @@
 
 // 1. Tab Switching Logic
 function switchTab(tabId) {
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
 
   document.getElementById(`tab-${tabId}`).classList.add('active');

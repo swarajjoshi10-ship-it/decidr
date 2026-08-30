@@ -13,9 +13,22 @@
   <header>
     <div class="header-container">
       <div class="logo">DECIDr</div>
-      <nav>
-        <button id="tab-dashboard" class="nav-btn active" onclick="switchTab('dashboard')">Audit Logs</button>
-        <button id="tab-form" class="nav-btn" onclick="switchTab('form')">Rule Creator</button>
+      <nav class="tab-navigation">
+        <button id="tab-dashboard" class="nav-tab active" onclick="switchTab('dashboard')">
+          <span class="tab-num">1</span>
+          <div class="tab-text">
+            <span class="tab-title">Audit Logs</span>
+            <span class="tab-sub">TELEMETRY</span>
+          </div>
+        </button>
+        <div class="tab-connector"></div>
+        <button id="tab-form" class="nav-tab" onclick="switchTab('form')">
+          <span class="tab-num">2</span>
+          <div class="tab-text">
+            <span class="tab-title">Rule Creator</span>
+            <span class="tab-sub">STANDARDS</span>
+          </div>
+        </button>
       </nav>
     </div>
   </header>
