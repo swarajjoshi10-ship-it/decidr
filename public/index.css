@@ -361,7 +361,8 @@ tr:hover {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-light);
@@ -373,8 +374,14 @@ tr:hover {
   transition: all 0.3s ease;
 }
 
+.form-group select option {
+  background: var(--bg-secondary);
+  color: var(--text-main);
+}
+
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--accent-gold);
   box-shadow: 0 0 8px rgba(203, 166, 115, 0.1);
