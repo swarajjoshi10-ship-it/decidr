@@ -26,6 +26,11 @@ async function loadDashboardData() {
     // Animate token savings counter for maximum visual premium feel
     animateValue('metric-tokens', 0, stats.tokensSaved || 0, 800);
 
+    // Render the Bypass Efficiency summary string
+    const pct = stats.savingsPercentage !== undefined ? stats.savingsPercentage : 100;
+    const summary = `${stats.localMatches || 0} checks resolved locally for free · ${stats.escalatedToAI || 0} escalated to AI · ${pct}% resolved without a single API call.`;
+    document.getElementById('telemetry-bypass-summary').innerText = summary;
+
     // B. Fetch Active Decisions count
     const adrsRes = await fetch('/api/decisions');
     const decisions = await adrsRes.json();

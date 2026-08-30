@@ -99,7 +99,8 @@ app.get('/api/stats', async (req, res) => {
     let scansCount = 0;
     let violationsCount = 0;
     let exemptedCount = 0;
-    let deterministicHits = 0;
+    let localMatches = 0;
+    let escalatedToAI = 0;
 
     for (const event of history) {
       if (event.event_type === 'SCAN_COMPLETED') {
@@ -107,19 +108,25 @@ app.get('/api/stats', async (req, res) => {
         const details = event.details || {};
         violationsCount += Number(details.violationsCount || 0);
         exemptedCount += Number(details.exemptedCount || 0);
-        // Any pass, violation, or exemption that bypassed the LLM completely
-        deterministicHits += Number(details.passedCount || 0) + Number(details.violationsCount || 0) + Number(details.exemptedCount || 0);
+        localMatches += Number(details.passedCount || 0) + Number(details.violationsCount || 0) + Number(details.exemptedCount || 0);
+      }
+      if (event.event_type === 'APPEAL_SUBMITTED') {
+        escalatedToAI++;
       }
     }
 
-    // Every deterministic AST resolution avoids a $1.00 prompt/response cycle (approx. 1000 tokens)
-    const tokensSaved = deterministicHits * 1000;
+    const totalChecks = localMatches + escalatedToAI;
+    const savingsPercentage = totalChecks > 0 ? Number(((localMatches / totalChecks) * 100).toFixed(1)) : 100;
+    const tokensSaved = localMatches * 1000;
 
     res.json({
       scansCount,
       violationsCount,
       exemptedCount,
       tokensSaved,
+      localMatches,
+      escalatedToAI,
+      savingsPercentage
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

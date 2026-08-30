@@ -20,109 +20,144 @@
     </div>
   </header>
 
-  <main class="container">
+  <!-- Restructured Grid Container: Main Content & Sidebar -->
+  <main class="container main-layout">
     
-    <!-- Tab 1: Dashboard Panel -->
-    <section id="panel-dashboard" class="panel active">
-      <div class="section-title">
-        <h1>Architectural Telemetry</h1>
-        <p>Live health, compliance drift logs, and token savings metrics.</p>
-      </div>
+    <!-- Left Column: Primary Workspaces -->
+    <div class="main-content">
+      
+      <!-- Tab 1: Dashboard Panel -->
+      <section id="panel-dashboard" class="panel active">
+        <div class="section-title">
+          <h1>Architectural Telemetry</h1>
+          <p>Live health, compliance drift logs, and token savings metrics.</p>
+        </div>
 
-      <!-- Telemetry Cards -->
-      <div class="grid-cards">
-        <div class="card glass">
-          <div class="card-title">Total Scans Run</div>
-          <div class="card-value" id="metric-scans">0</div>
+        <!-- Telemetry Cards -->
+        <div class="grid-cards">
+          <div class="card glass">
+            <div class="card-title">Total Scans Run</div>
+            <div class="card-value" id="metric-scans">0</div>
+          </div>
+          <div class="card glass border-error">
+            <div class="card-title">Violations Caught</div>
+            <div class="card-value text-error" id="metric-violations">0</div>
+          </div>
+          <div class="card glass border-success">
+            <div class="card-title">Active Decisions</div>
+            <div class="card-value text-success" id="metric-decisions">0</div>
+          </div>
+          <div class="card glass glow-purple">
+            <div class="card-title">AI Tokens Saved</div>
+            <div class="card-value text-glow" id="metric-tokens">0</div>
+          </div>
         </div>
-        <div class="card glass border-error">
-          <div class="card-title">Violations Caught</div>
-          <div class="card-value text-error" id="metric-violations">0</div>
-        </div>
-        <div class="card glass border-success">
-          <div class="card-title">Active Decisions</div>
-          <div class="card-value text-success" id="metric-decisions">0</div>
-        </div>
-        <div class="card glass glow-purple">
-          <div class="card-title">AI Tokens Saved</div>
-          <div class="card-value text-glow" id="metric-tokens">0</div>
-        </div>
-      </div>
 
-      <!-- Audit History Logs -->
-      <div class="logs-section glass">
-        <h2>Chronological History Log</h2>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Event Type</th>
-                <th>Entity ID</th>
-                <th>Actor</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody id="logs-tbody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+        <!-- Audit History Logs -->
+        <div class="logs-section glass">
+          <h2>Chronological History Log</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Event Type</th>
+                  <th>Entity ID</th>
+                  <th>Actor</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="logs-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Tab 2: Rule Form Panel -->
-    <section id="panel-form" class="panel">
-      <div class="section-title">
-        <h1>Rule Creator</h1>
-        <p>Define new architectural standards and compile schema-compliant ADR files instantly.</p>
-      </div>
+      <!-- Tab 2: Rule Form Panel -->
+      <section id="panel-form" class="panel">
+        <div class="section-title">
+          <h1>Rule Creator</h1>
+          <p>Define new architectural standards and compile schema-compliant ADR files instantly.</p>
+        </div>
 
-      <div class="form-container glass">
-        <form id="adr-form" onsubmit="submitADR(event)">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="adr-id">Rule ID</label>
-              <input type="text" id="adr-id" placeholder="e.g., ADR-003" required>
+        <div class="form-container glass">
+          <form id="adr-form" onsubmit="submitADR(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="adr-id">Rule ID</label>
+                <input type="text" id="adr-id" placeholder="e.g., ADR-003" required>
+              </div>
+              <div class="form-group">
+                <label for="adr-title">Rule Title / Subject</label>
+                <input type="text" id="adr-title" placeholder="e.g., Database Access" required>
+              </div>
             </div>
+
             <div class="form-group">
-              <label for="adr-title">Rule Title / Subject</label>
-              <input type="text" id="adr-title" placeholder="e.g., Database Access" required>
+              <label for="adr-statement">Compliance Statement</label>
+              <textarea id="adr-statement" rows="3" placeholder="Define the strict standard to enforce..." required></textarea>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="adr-statement">Compliance Statement</label>
-            <textarea id="adr-statement" rows="3" placeholder="Define the strict standard to enforce..." required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="adr-rationale">Rationale / Purpose</label>
-            <input type="text" id="adr-rationale" placeholder="Why this rule is critical..." required>
-          </div>
-
-          <div class="form-grid">
             <div class="form-group">
-              <label for="adr-prohibited">Prohibited Patterns (Comma separated)</label>
-              <input type="text" id="adr-prohibited" placeholder="e.g., db.write, db.insert">
+              <label for="adr-rationale">Rationale / Purpose</label>
+              <input type="text" id="adr-rationale" placeholder="Why this rule is critical..." required>
             </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="adr-prohibited">Prohibited Patterns (Comma separated)</label>
+                <input type="text" id="adr-prohibited" placeholder="e.g., db.write, db.insert">
+              </div>
+              <div class="form-group">
+                <label for="adr-allowed">Allowed Exceptions (Comma separated)</label>
+                <input type="text" id="adr-allowed" placeholder="e.g., Repository.save, Entity.create">
+              </div>
+            </div>
+
             <div class="form-group">
-              <label for="adr-allowed">Allowed Exceptions (Comma separated)</label>
-              <input type="text" id="adr-allowed" placeholder="e.g., Repository.save, Entity.create">
+              <label for="adr-approved">Approved By</label>
+              <input type="text" id="adr-approved" placeholder="e.g., Core Architecture Board" required>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="adr-approved">Approved By</label>
-            <input type="text" id="adr-approved" placeholder="e.g., Core Architecture Board" required>
-          </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Save Architecture Rule</button>
+            </div>
+          </form>
+        </div>
+      </section>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Architecture Rule</button>
+    </div>
+
+    <!-- Right Column: Sidebar Compliance Advisor card (Dấu Theme) -->
+    <aside class="sidebar">
+      
+      <!-- Mascot Container -->
+      <div class="mascot-card glass">
+        <span class="mascot-badge">Watch + Monitor</span>
+        <div class="avatar-container">
+          <img src="avatar.jpg" alt="Mascot Avatar" class="avatar-img">
+        </div>
+        <div class="mascot-info">
+          <h3>Cô Dấu</h3>
+          <p class="mascot-role">Compliance Advisor</p>
+          <div class="status-indicator">
+            <span class="status-dot green"></span>
+            <span class="status-text">All checks active</span>
           </div>
-        </form>
+        </div>
       </div>
-    </section>
+
+      <!-- Live Token Savings Dashboard -->
+      <div class="savings-card glass border-success">
+        <div class="card-title">Bypass Efficiency</div>
+        <div class="savings-value" id="telemetry-bypass-summary">
+          0 checks resolved locally for free · 0 escalated to AI · 100% resolved without a single API call.
+        </div>
+      </div>
+
+    </aside>
 
   </main>
 

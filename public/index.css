@@ -1,16 +1,16 @@
-/* Main Stylesheet for Decidr Governance Dashboard */
+/* Main Stylesheet for Decidr Governance Dashboard (Dấu Theme) */
 
 :root {
-  --bg-primary: #07080a;
-  --bg-secondary: #0f1115;
-  --text-main: #f4f5f6;
-  --text-muted: #9ba0ab;
-  --accent-purple: #9d5cfb;
-  --accent-pink: #ec4899;
-  --accent-success: #10b981;
-  --accent-error: #ef4444;
-  --border-light: rgba(255, 255, 255, 0.06);
-  --glass-bg: rgba(18, 20, 26, 0.65);
+  --bg-primary: #0a0908;
+  --bg-secondary: #12100e;
+  --text-main: #eae8e4;
+  --text-muted: #958d83;
+  --accent-gold: #cba673;
+  --accent-blue: #4ba3e3;
+  --accent-success: #3e845c;
+  --accent-error: #c2593f;
+  --border-light: rgba(255, 255, 255, 0.04);
+  --glass-bg: rgba(20, 18, 16, 0.7);
 }
 
 * {
@@ -34,7 +34,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 11, 14, 0.85);
+  background: rgba(10, 9, 8, 0.9);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-light);
 }
@@ -42,7 +42,7 @@ header {
 .header-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,7 +52,7 @@ header {
   font-size: 1.8rem;
   font-weight: 800;
   letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #ecd7b7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -80,9 +80,28 @@ nav {
 }
 
 .nav-btn.active {
-  background: rgba(157, 92, 251, 0.15);
-  color: var(--accent-purple);
-  border: 1px solid rgba(157, 92, 251, 0.3);
+  background: rgba(203, 166, 115, 0.12);
+  color: var(--accent-gold);
+  border: 1px solid rgba(203, 166, 115, 0.25);
+}
+
+/* Restructured Layout Grid */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 /* Container */
@@ -105,71 +124,72 @@ nav {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .section-title {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .section-title h1 {
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   font-weight: 800;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
+  color: var(--text-main);
 }
 
 .section-title p {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
 }
 
 /* Glassmorphism Cards */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 12px;
+  padding: 1.8rem;
 }
 
 .grid-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 140px;
+  min-height: 120px;
   transition: all 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  border-color: rgba(203, 166, 115, 0.15);
 }
 
 .card-title {
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
 }
 
 .card-value {
-  font-size: 2.6rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
 }
 
 /* Specific Card Aesthetics */
 .border-error {
-  border-left: 4px solid var(--accent-error);
+  border-left: 3px solid var(--accent-error);
 }
 
 .text-error {
@@ -177,7 +197,7 @@ nav {
 }
 
 .border-success {
-  border-left: 4px solid var(--accent-success);
+  border-left: 3px solid var(--accent-success);
 }
 
 .text-success {
@@ -185,27 +205,25 @@ nav {
 }
 
 .glow-purple {
-  border: 1px solid rgba(157, 92, 251, 0.4);
-  box-shadow: 0 0 20px rgba(157, 92, 251, 0.15);
+  border: 1px solid rgba(203, 166, 115, 0.35);
+  box-shadow: 0 0 15px rgba(203, 166, 115, 0.08);
 }
 
 .text-glow {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+  color: var(--accent-gold);
+  text-shadow: 0 0 10px rgba(203, 166, 115, 0.25);
 }
 
 /* Tables */
 .logs-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  margin-bottom: 1.2rem;
   font-weight: 800;
 }
 
 .table-container {
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid var(--border-light);
 }
 
@@ -216,12 +234,12 @@ table {
 }
 
 th, td {
-  padding: 1rem 1.2rem;
-  font-size: 0.95rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.9rem;
 }
 
 th {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text-muted);
   font-weight: 600;
 }
@@ -235,115 +253,203 @@ tr:last-child {
 }
 
 tr:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(255, 255, 255, 0.01);
 }
 
 /* Badges */
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .badge-created {
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(62, 132, 92, 0.15);
   color: var(--accent-success);
 }
 
 .badge-scan {
-  background: rgba(157, 92, 251, 0.15);
-  color: var(--accent-purple);
+  background: rgba(203, 166, 115, 0.15);
+  color: var(--accent-gold);
 }
 
 .badge-appeal {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background: rgba(194, 89, 63, 0.15);
+  color: var(--accent-error);
 }
 
 .badge-approved {
-  background: rgba(6, 182, 212, 0.15);
-  color: #06b6d4;
+  background: rgba(75, 163, 227, 0.15);
+  color: var(--accent-blue);
 }
 
 /* Form Styles */
 .form-container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 100%;
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .form-group label {
   display: block;
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text-main);
-  padding: 0.8rem 1rem;
+  padding: 0.7rem 0.9rem;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   transition: all 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 10px rgba(157, 92, 251, 0.15);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 8px rgba(203, 166, 115, 0.1);
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .btn {
   font-family: inherit;
   font-weight: 600;
-  font-size: 1rem;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
-  color: white;
+  background: var(--accent-gold);
+  color: #1a1815;
   border: none;
-  box-shadow: 0 4px 15px rgba(157, 92, 251, 0.3);
+  box-shadow: 0 2px 10px rgba(203, 166, 115, 0.2);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(157, 92, 251, 0.45);
+  transform: translateY(-1px);
+  background: #d8b887;
+  box-shadow: 0 4px 15px rgba(203, 166, 115, 0.3);
 }
 
-/* Footer layout matching the Figma Mockup */
+/* Mascot Card Sidebar styling */
+.mascot-card {
+  position: relative;
+  text-align: center;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+}
+
+.mascot-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.avatar-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--bg-primary);
+  object-fit: cover;
+}
+
+.mascot-info h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.mascot-role {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.green {
+  background: var(--accent-success);
+  box-shadow: 0 0 8px var(--accent-success);
+}
+
+/* Token Savings Card */
+.savings-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.savings-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-main);
+  background: rgba(62, 132, 92, 0.06);
+  border: 1px solid rgba(62, 132, 92, 0.12);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+}
+
+/* Footer Layout */
 footer {
-  background: #050608;
+  background: #050504;
   border-top: 1px solid var(--border-light);
   padding: 3rem 2rem;
   margin-top: auto;
@@ -371,7 +477,7 @@ footer {
 }
 
 .footer-logo span {
-  color: var(--accent-purple);
+  color: var(--accent-gold);
 }
 
 .footer-left p {
@@ -408,6 +514,12 @@ footer {
 
 .links-column a:hover {
   color: white;
+}
+
+@media (max-width: 992px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
