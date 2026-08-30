@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decidr Governance Dashboard</title>
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Floating Header matching Figma Navbar -->
+  <header>
+    <div class="header-container">
+      <div class="logo">DECIDR</div>
+      <nav>
+        <button id="tab-dashboard" class="nav-btn active" onclick="switchTab('dashboard')">Audit Logs</button>
+        <button id="tab-form" class="nav-btn" onclick="switchTab('form')">Rule Creator</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <!-- Tab 1: Dashboard Panel -->
+    <section id="panel-dashboard" class="panel active">
+      <div class="section-title">
+        <h1>Architectural Telemetry</h1>
+        <p>Live health, compliance drift logs, and token savings metrics.</p>
+      </div>
+
+      <!-- Telemetry Cards -->
+      <div class="grid-cards">
+        <div class="card glass">
+          <div class="card-title">Total Scans Run</div>
+          <div class="card-value" id="metric-scans">0</div>
+        </div>
+        <div class="card glass border-error">
+          <div class="card-title">Violations Caught</div>
+          <div class="card-value text-error" id="metric-violations">0</div>
+        </div>
+        <div class="card glass border-success">
+          <div class="card-title">Active Decisions</div>
+          <div class="card-value text-success" id="metric-decisions">0</div>
+        </div>
+        <div class="card glass glow-purple">
+          <div class="card-title">AI Tokens Saved</div>
+          <div class="card-value text-glow" id="metric-tokens">0</div>
+        </div>
+      </div>
+
+      <!-- Audit History Logs -->
+      <div class="logs-section glass">
+        <h2>Chronological History Log</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Event Type</th>
+                <th>Entity ID</th>
+                <th>Actor</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="logs-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Rule Form Panel -->
+    <section id="panel-form" class="panel">
+      <div class="section-title">
+        <h1>Rule Creator</h1>
+        <p>Define new architectural standards and compile schema-compliant ADR files instantly.</p>
+      </div>
+
+      <div class="form-container glass">
+        <form id="adr-form" onsubmit="submitADR(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="adr-id">Rule ID</label>
+              <input type="text" id="adr-id" placeholder="e.g., ADR-003" required>
+            </div>
+            <div class="form-group">
+              <label for="adr-title">Rule Title / Subject</label>
+              <input type="text" id="adr-title" placeholder="e.g., Database Access" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adr-statement">Compliance Statement</label>
+            <textarea id="adr-statement" rows="3" placeholder="Define the strict standard to enforce..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="adr-rationale">Rationale / Purpose</label>
+            <input type="text" id="adr-rationale" placeholder="Why this rule is critical..." required>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="adr-prohibited">Prohibited Patterns (Comma separated)</label>
+              <input type="text" id="adr-prohibited" placeholder="e.g., db.write, db.insert">
+            </div>
+            <div class="form-group">
+              <label for="adr-allowed">Allowed Exceptions (Comma separated)</label>
+              <input type="text" id="adr-allowed" placeholder="e.g., Repository.save, Entity.create">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adr-approved">Approved By</label>
+            <input type="text" id="adr-approved" placeholder="e.g., Core Architecture Board" required>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Architecture Rule</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Figma-themed Footer layout -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-logo">C<span>M</span></div>
+        <p>&copy; 2026 Decidr Standards Inc. All Rights Reserved.</p>
+      </div>
+      <div class="footer-right">
+        <div class="links-column">
+          <h4>Platform</h4>
+          <a href="#">Home</a>
+          <a href="#">Audit Logs</a>
+          <a href="#">Rule Form</a>
+        </div>
+        <div class="links-column">
+          <h4>Resources</h4>
+          <a href="#">Documentation</a>
+          <a href="#">Developer API</a>
+          <a href="#">Support</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>

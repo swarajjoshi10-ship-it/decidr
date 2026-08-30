@@ -9,13 +9,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/cli.js",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "dashboard": "npm run build && node dist/server.js"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "boxen": "^8.0.1",
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
+    "express": "^5.2.1",
     "gradient-string": "^3.0.0",
     "groq-sdk": "^1.6.0",
     "inquirer": "^14.2.0",
@@ -25,6 +27,7 @@
     "zod": "^4.5.2"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/gradient-string": "^1.1.6",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^26.4.0",

@@ -72,6 +72,23 @@ export async function runCheck(base: string, head: string, working: boolean): Pr
     `Checked ${fileDiffs.length} file(s): ${violations} violation(s), ${exempted} exempted case(s).`
   );
 
+  // Log scan event in history for dashboard telemetry
+  try {
+    await repo.logEvent({
+      event_type: 'SCAN_COMPLETED',
+      entity_id: 'SCAN',
+      actor: 'CLI_Scanner',
+      details: {
+        filesChecked: fileDiffs.length,
+        violationsCount: violations,
+        exemptedCount: exempted,
+        passedCount: fileDiffs.length - (violations + exempted),
+      }
+    });
+  } catch (err: any) {
+    // Ignore logging errors
+  }
+
   return violations > 0 ? 1 : 0;
 }
 

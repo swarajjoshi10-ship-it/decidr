@@ -37,7 +37,7 @@ export const ExceptionSchema = z.object({
 
 export const HistoryEventSchema = z.object({
   timestamp: z.string(),
-  event_type: z.enum(['DECISION_CREATED', 'VIOLATION_DETECTED', 'APPEAL_SUBMITTED', 'EXCEPTION_APPROVED']),
+  event_type: z.enum(['DECISION_CREATED', 'VIOLATION_DETECTED', 'APPEAL_SUBMITTED', 'EXCEPTION_APPROVED', 'SCAN_COMPLETED']),
   entity_id: z.string(),
   actor: z.string(),  
   details: z.record(z.string(), z.any()),
