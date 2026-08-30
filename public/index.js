@@ -177,14 +177,54 @@ function animateValue(id, start, end, duration) {
   }, 16);
 }
 
-// Admin Login / Logout Modal Controllers
+// Dynamic UI Render based on Authorization Role
+function updateUIForRole(role, username) {
+  const tabForm = document.getElementById('tab-form');
+  const connector = document.getElementById('tab-nav-connector');
+  const dashboardTitle = document.getElementById('dashboard-title');
+  const mascotRole = document.getElementById('mascot-role');
+  const mascotName = document.getElementById('mascot-name');
+  const loginBtn = document.getElementById('admin-login-btn');
+
+  if (role === 'admin') {
+    // Show rule creator tab
+    tabForm.style.display = 'flex';
+    connector.style.display = 'block';
+    // Update labels and sidebar
+    dashboardTitle.innerText = 'Architectural Telemetry';
+    mascotRole.innerText = 'Chief Architect';
+    mascotName.innerText = username;
+    loginBtn.innerText = `Logout (${username})`;
+  } else if (role === 'employee') {
+    // Hide rule creator tab
+    tabForm.style.display = 'none';
+    connector.style.display = 'none';
+    // Switch views to Audit Logs if they were on rule form
+    switchTab('dashboard');
+    // Update labels and sidebar
+    dashboardTitle.innerText = 'Developer Compliance Monitor';
+    mascotRole.innerText = 'Developer Coordinator';
+    mascotName.innerText = username;
+    loginBtn.innerText = `Logout (${username})`;
+  } else {
+    // Default Guest state (acts as generic Employee/Developer view)
+    tabForm.style.display = 'none';
+    connector.style.display = 'none';
+    switchTab('dashboard');
+    dashboardTitle.innerText = 'Developer Compliance Monitor';
+    mascotRole.innerText = 'Compliance Advisor';
+    mascotName.innerText = 'Cô Dấu';
+    loginBtn.innerText = 'Admin Login';
+  }
+}
+
+// Authorization Modal Controllers
 function showLoginModal() {
-  const btn = document.getElementById('admin-login-btn');
-  // If already logged in, click acts as a logout
-  if (localStorage.getItem('adminName')) {
+  // If already logged in, click acts as a logout trigger
+  if (localStorage.getItem('role')) {
+    localStorage.removeItem('role');
     localStorage.removeItem('adminName');
-    document.getElementById('mascot-name').innerText = 'Cô Dấu';
-    btn.innerText = 'Admin Login';
+    updateUIForRole(null, null);
     return;
   }
   document.getElementById('login-modal').classList.add('active');
@@ -193,6 +233,7 @@ function showLoginModal() {
 function hideLoginModal() {
   document.getElementById('login-modal').classList.remove('active');
   document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
 }
 
 function closeLoginModal(event) {
@@ -203,13 +244,26 @@ function closeLoginModal(event) {
 
 function handleLoginSubmit(event) {
   event.preventDefault();
+  const role = document.getElementById('login-role').value;
   const username = document.getElementById('login-username').value.trim();
-  if (username) {
-    localStorage.setItem('adminName', username);
-    document.getElementById('mascot-name').innerText = username;
-    document.getElementById('admin-login-btn').innerText = `Logout (${username})`;
-    hideLoginModal();
+  const pass = document.getElementById('login-password').value;
+
+  // Simple hardcoded checks: 'admin' for Admin, 'dev' for Employee
+  if (role === 'admin' && pass !== 'admin') {
+    alert('Invalid password for Admin Role! (Use password: admin)');
+    return;
   }
+  if (role === 'employee' && pass !== 'dev') {
+    alert('Invalid password for Employee Role! (Use password: dev)');
+    return;
+  }
+
+  // Save session details
+  localStorage.setItem('role', role);
+  localStorage.setItem('adminName', username);
+  
+  updateUIForRole(role, username);
+  hideLoginModal();
 }
 
 // Bootstrapping
@@ -217,9 +271,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadDashboardData();
   
   // Restore login session state
-  const savedAdmin = localStorage.getItem('adminName');
-  if (savedAdmin) {
-    document.getElementById('mascot-name').innerText = savedAdmin;
-    document.getElementById('admin-login-btn').innerText = `Logout (${savedAdmin})`;
-  }
+  const savedRole = localStorage.getItem('role');
+  const savedUser = localStorage.getItem('adminName');
+  updateUIForRole(savedRole, savedUser);
 });
