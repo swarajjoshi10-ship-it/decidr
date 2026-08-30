@@ -28,8 +28,12 @@ async function loadDashboardData() {
 
     // Render the Bypass Efficiency summary string
     const pct = stats.savingsPercentage !== undefined ? stats.savingsPercentage : 100;
-    const summary = `${stats.localMatches || 0} checks resolved locally for free · ${stats.escalatedToAI || 0} escalated to AI · ${pct}% resolved without a single API call.`;
-    document.getElementById('telemetry-bypass-summary').innerText = summary;
+    const summary = `
+      <div class="telemetry-line">${stats.localMatches || 0} checks resolved locally for free</div>
+      <div class="telemetry-line">${stats.escalatedToAI || 0} escalated to AI</div>
+      <div class="telemetry-line highlight-gold">${pct}% resolved without a single API call</div>
+    `;
+    document.getElementById('telemetry-bypass-summary').innerHTML = summary;
 
     // B. Fetch Active Decisions count
     const adrsRes = await fetch('/api/decisions');

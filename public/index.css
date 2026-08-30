@@ -707,3 +707,16 @@ footer {
   background: #d8b887;
   transform: translateY(-1px);
 }
+
+.telemetry-line {
+  margin-bottom: 0.35rem;
+}
+
+.telemetry-line:last-child {
+  margin-bottom: 0;
+}
+
+.highlight-gold {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
